@@ -6,7 +6,7 @@ import UserBadgeItem from '../UserAvatar/UserBadgeItem';
 import axios from 'axios';
 import UserListItem from '../UserAvatar/UserListItem';
 
-export default function UpdateGroupChat({ fetchAgain, setFetchAgain }) {
+export default function UpdateGroupChat({ fetchAgain, setFetchAgain, fetchMessages}) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const {user,selectedChat,setSelectedChat} = ChatState();
     const [groupChatName,setGroupChatName] = useState();
@@ -38,8 +38,8 @@ export default function UpdateGroupChat({ fetchAgain, setFetchAgain }) {
 
             const {data} = await axios.put('http://localhost:5000/api/chat/groupRemove',{chatId:selectedChat._id,userId:user1._id},config);
             user1._id===user._id ? setSelectedChat():setSelectedChat(data);
-            setSelectedChat(data);
-            setFetchAgain(fetchAgain);
+            setFetchAgain(!fetchAgain);
+            fetchMessages();
         } catch (error) {
             toast({
                 title: error.message,
@@ -169,8 +169,8 @@ export default function UpdateGroupChat({ fetchAgain, setFetchAgain }) {
                     <ModalHeader>{selectedChat.chatName}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Box w='100%' display='flex' flexWrap='wrap' pb={3}>{selectedChat.users.map((user)=>{
-                            return (<UserBadgeItem key={user._id} user={user} handleFunction={()=>{handleRemove(user)}}/>)
+                        <Box w='100%' display='flex' flexWrap='wrap' pb={3}>{selectedChat.users.map((user,index)=>{
+                            return (<UserBadgeItem key={index} user={user} handleFunction={()=>{handleRemove(user)}}/>)
                         })}
                         </Box>
                         <FormControl display='flex'>
@@ -184,8 +184,8 @@ export default function UpdateGroupChat({ fetchAgain, setFetchAgain }) {
                         </FormControl>
                         <div style={{maxHeight:"300px",overflow:'scroll',width:'100%'}}>
                         {loading ? (<Spinner size='lg'/>)
-                        :(searchResults?.map((user)=>{
-                            return <UserListItem key={user._id} user={user} handleFunction={()=>handleAddUser(user)}/>
+                        :(searchResults?.map((user,index)=>{
+                            return <UserListItem key={index} user={user} handleFunction={()=>handleAddUser(user)}/>
                         }))}</div>
                     </ModalBody>
                     <ModalFooter>

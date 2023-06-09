@@ -72,14 +72,15 @@ export default function SideDrawer() {
                 }    
             }
             const {data} = await axios.post('http://localhost:5000/api/chat',{userId},config);
-            console.log(data);
+            console.log("Chats : ",chats);
+            console.log("Data : ",data);
             if(!chats.find(c=>{return c._id === data._id}))
             {
                 console.log(chats);
-                setChats([...chats],data);  
+                setChats([data,...chats]);
             }
-            onClose();
             setSelectedChat(data);
+            onClose();  
         } catch (error) {
             toast({
                 title:error.message,
