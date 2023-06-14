@@ -8,13 +8,15 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import ChatLoading from './ChatLoading';
 import UserListItem from '../UserAvatar/UserListItem';
+import { getSender } from '../../config/chatLogics';
+import NotificationBadge,{Effect} from 'react-notification-badge'
 
 export default function SideDrawer() {
     const [search, setSearch] = useState("")
     const [searchResult, setSearchResult] = useState([])
     const [loading, setLoading] = useState(false);
     const [loadingChat, setLoadingChat] = useState(false);
-    const { user ,setSelectedChat, chats,setChats} = ChatState();
+    const { user ,setSelectedChat, chats,setChats,notification,setNotification} = ChatState();
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
@@ -72,11 +74,8 @@ export default function SideDrawer() {
                 }    
             }
             const {data} = await axios.post('http://localhost:5000/api/chat',{userId},config);
-            console.log("Chats : ",chats);
-            console.log("Data : ",data);
             if(!chats.find(c=>{return c._id === data._id}))
             {
-                console.log(chats);
                 setChats([data,...chats]);
             }
             setSelectedChat(data);
@@ -103,7 +102,12 @@ export default function SideDrawer() {
             </Tooltip>
             <Text fontSize='2xl' fontFamily='Work Sans'>Talk-A-Tive</Text>
             <div><Menu>
-                <MenuButton p='1'><BellIcon fontSize='2xl' m='1' /></MenuButton>
+                <MenuButton p='1'> <NotificationBadge count={notification.length} effect={Effect.SCALE}/><BellIcon fontSize='2xl' m='1' /></MenuButton>
+                <MenuList pl={2}>{!notification.length && "No New Messages"}{
+                    notification.map((n)=>{
+                        return(<MenuItem onClick={()=>{setSelectedChat(n.chat);setNotification(notification.filter((no)=>{return(no!==n)}));}} key={n._id}>{n.chat.isGroupChat?`New Message in ${n.chat.chatName}`:`New Message from ${getSender(user,n.chat.users)}`}</MenuItem>)
+                    })
+                }</MenuList>
             </Menu><Menu>
                     <MenuButton as={Button} rightIcon={<ChevronDownIcon />}><Avatar size='sm' cursor='pointer' name={user.name} src={user.pic} /></MenuButton>
                     <MenuList>

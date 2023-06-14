@@ -8,6 +8,7 @@ const ChatProvider = ({children}) =>{
     const [user, setUser] = useState();
     const [selectedChat,setSelectedChat] = useState();
     const [chats,setChats] = useState([]);
+    const [notification,setNotification] = useState([]);
 
     useEffect(() => {
         const userdata = JSON.parse(localStorage.getItem('userinfo'));
@@ -18,9 +19,8 @@ const ChatProvider = ({children}) =>{
         }
         // eslint-disable-next-line
     }, [])
-    
     return(
-        <ChatContext.Provider value={{user,setUser,setSelectedChat,selectedChat,chats,setChats}}>{children}</ChatContext.Provider>
+        <ChatContext.Provider value={{user,setUser,setSelectedChat,selectedChat,chats,setChats,notification,setNotification}}>{children}</ChatContext.Provider>
     )
 }
 
